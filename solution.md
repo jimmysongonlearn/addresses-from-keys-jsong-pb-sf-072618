@@ -25,7 +25,6 @@ uncompressed, 4242424242
 
 
 ```python
-# Exercise 7.1
 from ecc import G
 
 from helper import double_sha256, encode_base58, hash160
@@ -38,14 +37,23 @@ components = (
 )
 
 # iterate through components
+for compressed, secret in components:
     # get the public point
+    point = secret * G
     # get the sec format
+    sec = point.sec(compressed)
     # hash160 the result
+    h160 = hash160(sec)
     # prepend b'\x00' for mainnet b'\x6f' for testnet
+    for prefix in (b'\x00', b'\x6f'):
         # raw is the prefix + h160
-        # get the double_sha256 of raw, first 4 bytes are the checksum
+        raw = prefix + h160
+        # get the double_sha256 of the raw, first 4 bytes are the checksum
+        checksum = double_sha256(raw)[:4]
         # append checksum
+        total = raw + checksum
         # encode_base58 the whole thing
+        print(encode_base58(total).decode('ascii'))
 ```
 
 ### Test Driven Exercise
